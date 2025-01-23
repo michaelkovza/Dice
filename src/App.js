@@ -47,7 +47,7 @@ function App() {
         .then(res => res.json())
         .then(gameData => console.log(gameData))
 
-    }, [opponent]);
+    }, [opponent, roomId]);
 
   return (
     <div style={{ backgroundColor: 'tomato' }} className="App">
