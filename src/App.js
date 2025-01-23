@@ -30,7 +30,7 @@ function App() {
       .then(res => res.json())
       .then(data => { setRoomStatus(data.status) })
       .catch(error => alert(error))
-  }, []);
+  }, [roomId]);
 
     useEffect(() => {
       if (!opponent) {
@@ -47,7 +47,7 @@ function App() {
         .then(res => res.json())
         .then(gameData => console.log(gameData))
 
-    }, []);
+    }, [opponent]);
 
   return (
     <div style={{ backgroundColor: 'tomato' }} className="App">
