@@ -57,6 +57,10 @@ function App() {
         console.error('No opponentData')
       }
 
+      if (userId + '' === "444501490") {
+          return
+      }
+
       fetch(
         `https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/join`,
         {
