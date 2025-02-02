@@ -77,7 +77,7 @@ function App() {
             }
 
             let isWinner = false;
-            
+
             const isHost = userId === gameData.host.id
             const isOpponent = userId === gameData.opponent.id
 
@@ -97,9 +97,7 @@ function App() {
       if (!opponent) {
           throw new Error('No tgWebAppData')
       }
-
-      const params = new URLSearchParams(opponent)
-
+      
       try {
           fetch(
               `https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/spin`,
