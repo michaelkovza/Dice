@@ -97,7 +97,7 @@ function App() {
       if (!opponent) {
           throw new Error('No tgWebAppData')
       }
-      
+
       try {
           fetch(
               `https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/spin`,
@@ -118,7 +118,7 @@ function App() {
           console.error(error)
       }
 
-  }, [roomId, userId])
+  }, [roomId, userId, opponent])
 
   return (
     <div style={{ backgroundColor: 'tomato' }} className="App">
