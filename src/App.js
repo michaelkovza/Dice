@@ -1,15 +1,48 @@
-import { getRoomId } from "./lib/getRoomId";
-import { getOpponentData } from "./lib/getOpponentData";
-import './App.css';
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { Waiting } from './components/Waiting/Waiting'
 import { Dice } from './components/Dice/Dice'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { getRoomId } from "./lib/getRoomId";
+import { getOpponentData } from "./lib/getOpponentData";
+
+import { fetchGame } from "./api/fetchGameStatus"
+import { joinGame } from "./api/joinGame";
+import './App.css';
 
 function App() {
   const roomId = getRoomId()
   const opponent = getOpponentData()
+
+
+  const game = useQuery({
+    queryKey: ['gameQuery', roomId],
+    queryFn: async () => {
+      const response = await fetchGame(roomId)
+      const data = await response.json()
+
+      return {
+          hostId: data.host.id,
+          status: data.status,
+      }
+    },
+    refetchInterval: 10_000,
+  })
+
+  const joinGameMutation = useMutation({
+      mutationFn: async ({ gameId, opponent }) => {
+          const result = await joinGame(gameId, opponent)
+          console.log(result);
+
+      }
+  })
+
+
+    const handleJoinGame = useCallback(() => {
+        return joinGameMutation.mutate({ gameId: roomId, opponent })
+    }, [joinGameMutation, opponent, roomId])
+
 
   const userId = useMemo(() => {
       const params = new URLSearchParams(opponent)
@@ -38,63 +71,19 @@ function App() {
   // 2.1) Передать данные игрока
   // 2.2)
 
-  useEffect(() => {
-    if (!roomId) {
-     console.error('No roomId')
-     return
-    }
-
-    fetch(`https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/status`)
-      .then(res => res.json())
-      .then(data => {
-          setRoomStatus(data.status)
-      })
-      .catch(error => alert(error))
-  }, [roomId]);
-
-  useEffect(() => {
-      if (!opponent) {
-        console.error('No opponentData')
-      }
-
-      if (userId + '' === "444501490") {
-          return
-      }
-
-      fetch(
-        `https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/join`,
-        {
-          method: "POST",
-          body: JSON.stringify({ opponentData: opponent })
-        }
-        )
-        .then(res => res.json())
-        .then(gameData => {
-            if (gameData.opponent.id === userId) {
-                setScore(gameData.opponent.score);
-            } else if (gameData.host.id === userId) {
-                setScore(gameData.host.score);
-            }
-
-            if (gameData.status !== 'FINISHED') {
-                return
-            }
-
-            let isWinner = false;
-
-            const isHost = userId === gameData.host.id
-            const isOpponent = userId === gameData.opponent.id
-
-            if (isHost && gameData.host.score > gameData.opponent.score) {
-                isWinner = true;
-            } else if (isOpponent && gameData.opponent.score > gameData.host.score) {
-                isWinner = true;
-            }
-
-            setWinStatus(isWinner);
-        })
-
-  }, [opponent, roomId, userId]);
+    // useEffect(() => {
+    //     if (game.isLoading || !game.data || !opponent) {
+    //         return
+    //     }
+    //
+    //     if (game.data.hostId === userId) {
+    //         console.log("User is host, already joined")
+    //
+    //         return
+    //     }
+    //
+    //     handleJoinGame()
+    // }, [game.data, game.isLoading, opponent, roomId, userId]);
 
   const handleSpin = useCallback(() => {
 
@@ -125,18 +114,18 @@ function App() {
   }, [roomId, userId, opponent])
 
   return (
-    <div style={{ backgroundColor: 'tomato' }} className="App">
-       <p>RoomId: {roomId}</p>
-       <p>Guest: {opponent}</p>
-        
-       <p>Status: {roomStatus}</p>
+        <div style={{ backgroundColor: 'tomato' }} className="App">
+           <p>RoomId: {roomId}</p>
+           <p>Guest: {opponent}</p>
 
-        { roomStatus === 'WAITING' && (<Waiting />) }
+           <p>Status: {roomStatus}</p>
 
-        { roomStatus === 'IN_PROGRESS' && <Dice onSpin={handleSpin} score={score} /> }
+            { roomStatus === 'WAITING' && (<Waiting />) }
 
-        { roomStatus === 'FINISHED' && <p>{ winStatus + ''  }</p> }
-    </div>
+            { roomStatus === 'IN_PROGRESS' && <Dice onSpin={handleSpin} score={score} /> }
+
+            { roomStatus === 'FINISHED' && <p>{ winStatus + ''  }</p> }
+        </div>
   );
 }
 
