@@ -1,10 +1,10 @@
 import React from 'react'
-import classes from './BottomButton.module.css'
+import css from './BottomButton.module.css'
 
 function BottomButton({ text, ...props }) {
   return (
     <div>
-      <button {...props} className={classes.BottomButton}>
+      <button {...props} className={css.root}>
         {text}
       </button>
     </div>

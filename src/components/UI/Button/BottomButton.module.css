@@ -1,4 +1,4 @@
-.BottomButton {
+.root {
     margin-top: auto;
     background: none;
     width: 100%;
@@ -8,6 +8,6 @@
     transition: background-color 0.3s ease;
 }
 
-.BottomButton:hover {
+.root:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
