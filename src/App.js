@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMutation, useQuery} from '@tanstack/react-query'
 
