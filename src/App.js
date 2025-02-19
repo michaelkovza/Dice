@@ -1,18 +1,24 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+/* eslint-disable */
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useMutation, useQuery} from '@tanstack/react-query'
 
-import { Waiting } from './components/Waiting/Waiting'
-import { Dice } from './components/Dice/Dice'
+import {Waiting} from './components/Waiting/Waiting'
+import {Dice} from './components/Dice/Dice'
 
-import { getRoomId } from "./lib/getRoomId";
-import { getOpponentData } from "./lib/getOpponentData";
+import {getRoomId} from "./lib/getRoomId";
+import {getOpponentData} from "./lib/getOpponentData";
 
-import { fetchGame } from "./api/fetchGameStatus"
-import { joinGame } from "./api/joinGame";
+import {fetchGame} from "./api/fetchGameStatus"
+import {joinGame} from "./api/joinGame";
 import './App.css';
 
 function App() {
-    const roomId = getRoomId()
+    const [roomStatus, setRoomStatus] = useState('WAITING')
+  const [score, setScore] = useState(0)
+    // 10 - win
+    // 01 - loose
+    // 11 - nichya
+  const [winStatus] = useState(undefined)const roomId = getRoomId()
     const opponent = getOpponentData()
 
 
@@ -32,15 +38,20 @@ function App() {
 
     const joinGameMutation = useMutation({
         mutationFn: async ({ gameId, opponent }) => {
-            const result = await joinGame(gameId, opponent)
-            console.log(result);
+            const response = await joinGame(gameId, opponent)
 
-        }
+
+        return response.json()
+      },
+      onSuccess: (data) => {
+          if (data.status === 'IN_PROGRESS') {
+            setRoomStatus(data.status)
+          }}
     })
 
 
     const handleJoinGame = useCallback(() => {
-        return joinGameMutation.mutate({ gameId: roomId, opponent })
+        joinGameMutation.mutate({ gameId: roomId, opponent })
     }, [joinGameMutation, opponent, roomId])
 
 
@@ -56,34 +67,33 @@ function App() {
         }
     }, [opponent])
 
-    const [roomStatus, setRoomStatus] = useState('WAITING')
-    const [score, setScore] = useState(0)
-    // 10 - win
-    // 01 - loose
-    // 11 - nichya
-    const [winStatus, setWinStatus] = useState(undefined)
+
 
     // 1) DONE Игрок зашел по ссылке и game_status === WAITING => показать сообщение о том, что ждем противника
-    // 1.1) DONE Нужен запрос за game_status, который возвращает game_status 
-    // 1.2) Опрашивать статус комнаты каждые 2 сек  
+    // 1.1) DONE Нужен запрос за game_status, который возвращает game_status
+    // 1.2) Опрашивать статус комнаты каждые 2 сек
 
     // 2) Заход  второго игрока
     // 2.1) Передать данные игрока
     // 2.2)
 
-    // useEffect(() => {
-    //     if (game.isLoading || !game.data || !opponent) {
-    //         return
-    //     }
-    //
-    //     if (game.data.hostId === userId) {
-    //         console.log("User is host, already joined")
-    //
-    //         return
-    //     }
-    //
-    //     handleJoinGame()
-    // }, [game.data, game.isLoading, opponent, roomId, userId]);
+    useEffect(() => {
+        if (game.isLoading || !game.data || !opponent) {
+            return
+        }
+
+        if (game.data.status === 'IN_PROGRESS') {
+            setRoomStatus(game.data.status)
+        }
+
+        if (game.data.hostId === userId) {
+            console.log("User is host, already joined")
+
+            return
+        }
+
+        handleJoinGame()
+    }, [game.data, game.isLoading, opponent, roomId, userId]);
 
     const handleSpin = useCallback(() => {
 
