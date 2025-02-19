@@ -1,0 +1,34 @@
+.root {
+    position: relative;
+    background-color: white;
+    background-image: url('../../../public/img/sand_watch_left.png');
+    background-repeat: no-repeat;
+    height: calc(100vh - 64px);
+    padding: 20px 20px 44px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.root::before {
+    position: absolute;
+    content: '';
+    background-image: url('../../../public/img/sand_watch_right.png');
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.title {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
