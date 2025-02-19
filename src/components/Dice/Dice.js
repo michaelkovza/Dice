@@ -2,6 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {Button} from "../Button/Button";
 
+import css from './index.module.css'
+
+
+
 export const Dice = () => {
     const [rolling, setRolling] = useState(false);
     const [dots, setDots] = useState(generateRandomDots());
@@ -22,19 +26,19 @@ export const Dice = () => {
             setDots(newResult);
             setResult(newResult);
             setRolling(false);
-        }, 2000);
+        }, 1200);
     };
 
     return (
-        <div className="flex flex-col items-center space-y-4">
+        <div className={css.root}>
             <motion.div
-                className="w-24 h-24 flex items-center justify-center bg-white border-4 border-gray-800 rounded-lg"
-                animate={{ rotate: rolling ? 360 : 0 }}
-                transition={{ duration: 2, ease: "easeInOut" }}
+                className={css.dice}
+                animate={rolling ? { rotate: [0, -90, -180, -270, -270, -180, -90, 0] } : { rotate: 0 }}
+                transition={{ duration: 1.2, ease: "linear" }}
             >
                 {!rolling && <DiceFace value={dots} />}
             </motion.div>
-            <Button onClick={rollDice} disabled={rolling}>Бросить кубик</Button>
+            <Button onClick={rollDice} disabled={rolling} text="Бросить куби" />
         </div>
     );
 }
@@ -51,11 +55,11 @@ function DiceFace({ value }) {
     ];
 
     return (
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className={css.dotContainer}>
             {dotPositions[value]?.map(([x, y], index) => (
                 <motion.div
                     key={index}
-                    className="absolute w-4 h-4 bg-black rounded-full"
+                    className={css.dot}
                     style={{ top: `${y}%`, left: `${x}%`, transform: "translate(-50%, -50%)" }}
                     initial={{ opacity: 1 }}
                     animate={{ opacity: 1 }}
