@@ -18,7 +18,8 @@ function App() {
     // 10 - win
     // 01 - loose
     // 11 - nichya
-  const [winStatus] = useState(undefined)const roomId = getRoomId()
+  const [winStatus] = useState(undefined)
+  const roomId = getRoomId()
     const opponent = getOpponentData()
 
 
