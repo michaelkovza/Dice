@@ -11,17 +11,29 @@ import {getOpponentData} from "./lib/getOpponentData";
 import {fetchGame} from "./api/fetchGameStatus"
 import {joinGame} from "./api/joinGame";
 import './App.css';
+import { spinDice } from "./api/spinDice";
 
 function App() {
     const [roomStatus, setRoomStatus] = useState('WAITING')
-  const [score, setScore] = useState(0)
+    const [score, setScore] = useState(0)
     // 10 - win
     // 01 - loose
     // 11 - nichya
-  const [winStatus] = useState(undefined)
-  const roomId = getRoomId()
+    const [winStatus] = useState(undefined)
+    const roomId = getRoomId()
     const opponent = getOpponentData()
 
+    const userId = useMemo(() => {
+        const params = new URLSearchParams(opponent)
+
+        try {
+            const user = JSON.parse(params.get('user'))
+
+            return user.id
+        } catch (error) {
+            alert("App:userId:error", error)
+        }
+    }, [opponent])
 
     const game = useQuery({
         queryKey: ['gameQuery', roomId],
@@ -41,49 +53,43 @@ function App() {
         mutationFn: async ({ gameId, opponent }) => {
             const response = await joinGame(gameId, opponent)
 
-
         return response.json()
       },
       onSuccess: (data) => {
-          if (data.status === 'IN_PROGRESS') {
+          if (['IN_PROGRESS', 'RE_SPIN'].includes(data.status)) {
             setRoomStatus(data.status)
           }}
     })
 
+    const spinRollMutation = useMutation({
+        mutationFn: async ({gameId, playerId}) => {
+            const response = await spinDice(gameId, playerId)
+
+            return response.json()
+        },
+        onSuccess: (data) => {
+            if (data.opponent.id === userId) {
+                setScore(data.opponent.score);
+            } else if (data.host.id === userId) {
+                setScore(data.host.score);
+            }
+        },
+    })
+
+    const handleSpinDice = useCallback(() => {
+        spinRollMutation.mutate({gameId: roomId, playerId: userId})
+    },[roomId, userId, spinRollMutation])
 
     const handleJoinGame = useCallback(() => {
         joinGameMutation.mutate({ gameId: roomId, opponent })
     }, [joinGameMutation, opponent, roomId])
-
-
-    const userId = useMemo(() => {
-        const params = new URLSearchParams(opponent)
-
-        try {
-            const user = JSON.parse(params.get('user'))
-
-            return user.id
-        } catch (error) {
-            alert("App:userId:error", error)
-        }
-    }, [opponent])
-
-
-
-    // 1) DONE Игрок зашел по ссылке и game_status === WAITING => показать сообщение о том, что ждем противника
-    // 1.1) DONE Нужен запрос за game_status, который возвращает game_status
-    // 1.2) Опрашивать статус комнаты каждые 2 сек
-
-    // 2) Заход  второго игрока
-    // 2.1) Передать данные игрока
-    // 2.2)
 
     useEffect(() => {
         if (game.isLoading || !game.data || !opponent) {
             return
         }
 
-        if (game.data.status === 'IN_PROGRESS') {
+        if (['IN_PROGRESS', 'RE_SPIN'].includes(game.data.status)) {
             setRoomStatus(game.data.status)
         }
 
@@ -96,34 +102,6 @@ function App() {
         handleJoinGame()
     }, [game.data, game.isLoading, opponent, roomId, userId]);
 
-    const handleSpin = useCallback(() => {
-
-        if (!opponent) {
-            throw new Error('No tgWebAppData')
-        }
-
-        try {
-            fetch(
-                `https://krutilka.michaelkovzanovich.workers.dev/api/room/${roomId}/spin`,
-                {
-                    method: "POST",
-                    body: JSON.stringify({ playerId: String(userId) })
-                }
-            )
-                .then(res => res.json())
-                .then(res => {
-                    if (res.opponent.id === userId) {
-                        setScore(res.opponent.score);
-                    } else if (res.host.id === userId) {
-                        setScore(res.host.score);
-                    }
-                })
-        } catch (error) {
-            console.error(error)
-        }
-
-    }, [roomId, userId, opponent])
-
     return (
         <div style={{ backgroundColor: 'tomato' }} className="App">
             {/* <p>RoomId: {roomId}</p>
@@ -133,7 +111,7 @@ function App() {
 
             {roomStatus === 'WAITING' && (<Waiting opponentName={opponent.name} />)}
 
-            {roomStatus === 'IN_PROGRESS' && <Dice onSpin={handleSpin} score={score} />}
+            {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} />}
 
             {roomStatus === 'FINISHED' && <p>{winStatus + ''}</p>}
         </div>

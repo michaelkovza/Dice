@@ -7,8 +7,14 @@
     border: 1px solid black;
     transition: background-color 0.3s ease;
     font-size: 17px;
+    cursor: pointer;
 }
 
 .root:hover {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.root:disabled {
+    opacity: 0.5;
+    cursor: initial;
 }

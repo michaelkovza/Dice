@@ -1,30 +1,41 @@
-import { useState } from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import { motion } from "framer-motion";
 import BottomButton from "../UI/Button/BottomButton";
 
 import css from './index.module.css';
 
 
-export const Dice = () => {
+
+export const Dice = ({ onSpin, score, isReSpin }) => {
     const [rolling, setRolling] = useState(false);
     const [dots, setDots] = useState(generateRandomDots());
-    const [result, setResult] = useState(null);
+
+    const isButtonDisabled = useMemo(() => {
+        return (rolling || score > 0) && !isReSpin;
+    }, [rolling, score, isReSpin])
 
     function generateRandomDots() {
         return Math.floor(Math.random() * 6) + 1;
     }
-    
-    const rollDice = () => {
-        setRolling(true);
-        setDots(null);
+
+    const handleSpin = useCallback(() => {
+        onSpin()
+
+        setRolling(true)
+        setDots(null)
+    }, [onSpin])
+
+    useEffect(() => {
+        if (!score) {
+            return
+        }
 
         setTimeout(() => {
-            const newResult = generateRandomDots();
-            setDots(newResult);
-            setResult(newResult);
-            setRolling(false);
-        }, 500);
-    };
+            setDots(score)
+            setRolling(false)
+        }, 500)
+
+    }, [score])
 
     return (
         <div className={css.root}>
@@ -34,9 +45,7 @@ export const Dice = () => {
                     style={{ backgroundColor: "#F5F1E9" }}
                     animate={
                         rolling
-                            ? {
-                                rotate: [-180],
-                            }
+                            ? { rotate: -180 }
                             : { rotate: 0 }
                     }
                     transition={{
@@ -51,7 +60,7 @@ export const Dice = () => {
                 </motion.div>
             </div>
             <div className={css.buttonContainer}>
-                <BottomButton style={{ backgroundColor: "black", color: "white" }} onClick={rollDice} disabled={rolling} text="Бросить кубик" />
+                <BottomButton style={{ backgroundColor: "black", color: "white" }} onClick={handleSpin} disabled={isButtonDisabled} text="Бросить кубик" />
             </div>
         </div>
     );
@@ -78,7 +87,7 @@ function DiceFace({ value }) {
                         style={{ top: `${y}%`, left: `${x}%`, transform: "translate(-50%, -50%)" }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+                        transition={{ duration: 0.4, ease: "easeInOut", delay: 0.1 }}
                     />
                 ))}
         </div>
