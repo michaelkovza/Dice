@@ -11,15 +11,16 @@ import {getOpponentData} from "./lib/getOpponentData";
 import {fetchGame} from "./api/fetchGameStatus"
 import {joinGame} from "./api/joinGame";
 import './App.css';
-import { spinDice } from "./api/spinDice";
+import {spinDice} from "./api/spinDice";
 
 function App() {
     const [roomStatus, setRoomStatus] = useState('WAITING')
     const [score, setScore] = useState(0)
-    // 10 - win
-    // 01 - loose
-    // 11 - nichya
-    const [winStatus] = useState(undefined)
+
+    // undefined - не определен победелить
+    // true - выйграл
+    // false - проиграл
+    const [isWin, setIsWin] = useState(undefined)
     const roomId = getRoomId()
     const opponent = getOpponentData()
 
@@ -39,12 +40,8 @@ function App() {
         queryKey: ['gameQuery', roomId],
         queryFn: async () => {
             const response = await fetchGame(roomId)
-            const data = await response.json()
 
-            return {
-                hostId: data.host.id,
-                status: data.status,
-            }
+            return await response.json()
         },
         refetchInterval: 10_000,
     })
@@ -73,6 +70,10 @@ function App() {
             } else if (data.host.id === userId) {
                 setScore(data.host.score);
             }
+
+
+            // TODO вот это место номер 2 что-то сделать с признаком победы
+            console.log(data)
         },
     })
 
@@ -89,17 +90,20 @@ function App() {
             return
         }
 
-        if (['IN_PROGRESS', 'RE_SPIN'].includes(game.data.status)) {
-            setRoomStatus(game.data.status)
-        }
+        setRoomStatus(game.data.status)
 
-        if (game.data.hostId === userId) {
+        // TODO вот это место номер 1 что-то сделать с признаком победы
+        console.log(game.data)
+
+        if (game.data.host.id === userId) {
             console.log("User is host, already joined")
 
             return
         }
 
-        handleJoinGame()
+        if (game.data.status !== 'FINISHED') {
+            handleJoinGame()
+        }
     }, [game.data, game.isLoading, opponent, roomId, userId]);
 
     return (
@@ -113,7 +117,7 @@ function App() {
 
             {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} />}
 
-            {roomStatus === 'FINISHED' && <p>{winStatus + ''}</p>}
+            {roomStatus === 'FINISHED' && <p>признак победы</p>}
         </div>
     );
 }
