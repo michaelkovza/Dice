@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import BottomButton from "../UI/Button/BottomButton";
 
@@ -60,7 +60,7 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
                 </motion.div>
             </div>
             <div className={css.buttonContainer}>
-                <BottomButton style={{ backgroundColor: "black", color: "white" }} onClick={handleSpin} disabled={isButtonDisabled} text="Бросить кубик" />
+                <BottomButton onClick={handleSpin} disabled={isButtonDisabled} text="Бросить кубик" />
             </div>
         </div>
     );

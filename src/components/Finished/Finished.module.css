@@ -1,0 +1,38 @@
+.root {
+    position: relative;
+    background-color: white;
+    height: calc(100vh - 64px);
+    padding: 20px 20px 44px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.title {
+    text-decoration: line-through;
+}
+
+.textContainer {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+.discription {
+    white-space: pre-line;
+    font-size: 20px;
+}
+
+.winner {
+    background-image: url('../../../public/img/crown.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.loser {
+    background-image: url('../../../public/img/scull.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
