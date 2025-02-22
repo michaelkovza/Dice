@@ -39,6 +39,9 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
 
     return (
         <div className={css.root}>
+            { isReSpin && <h1>Ничья</h1> }
+
+
             <div className={css.diceContainer}>
                 <motion.div
                     className={css.dice}
@@ -58,6 +61,8 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
                 >
                     <DiceFace value={dots} rolling={rolling} />
                 </motion.div>
+
+                { isReSpin && <p>Крутите еще раз</p> }
             </div>
             <div className={css.buttonContainer}>
                 <BottomButton onClick={handleSpin} disabled={isButtonDisabled} text="Бросить кубик" />
