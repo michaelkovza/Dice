@@ -92,18 +92,28 @@ function App() {
 
         setRoomStatus(game.data.status)
 
-        console.log(game.data)
-
-        if (game.data.host.id === userId) {
-            console.log("User is host, already joined")
-
-            return
-        }
-
-        if (game.data.status !== 'FINISHED') {
+        if (game.data.host.id !== userId) {
             handleJoinGame()
         }
     }, [game.data, game.isLoading, opponent, roomId, userId]);
+
+    const results = useMemo(() => {
+        if (!game.data) {
+            return
+        }
+
+        const isHost = userId === game.data.host.id
+
+        const player = isHost ? game.data.host : game.data.opponent;
+        const opponent = isHost ? game.data.opponent : game.data.host;
+
+        return {
+            className: player.isWinner ? css.winner : css.loser,
+            title: player.isWinner ? 'Вы победили!' : 'Вы проиграли!',
+            scoreX: player.score,
+            scoreY: opponent.score,
+        };
+    }, [game.data, userId])
 
     return (
         <div style={{ backgroundColor: 'tomato' }} className="App">
@@ -116,20 +126,9 @@ function App() {
 
             {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} />}
 
-            {roomStatus === 'FINISHED' && (<Finished
-                className={game.data.host.id === userId
-                    ? (game.data.host.isWinner ? css.winner : css.loser)
-                    : (game.data.opponent.isWinner ? css.winner : css.loser)
-                }
-                title={game.data.host.id === userId
-                    ? (game.data.host.isWinner ? "ВЫ ПОБЕДИЛИ!" : "ВЫ ПРОИГРАЛИ!")
-                    : (game.data.opponent.isWinner ? "ВЫ ПОБЕДИЛИ!" : "ВЫ ПРОИГРАЛИ!")
-                }
-                results={game.data.host.id === userId
-                    ? `Ваш результат: ${game.data.host.score}\n Результат соперника: ${game.data.opponent.score}`
-                    : `Ваш результат: ${game.data.opponent.score}\n Результат соперника: ${game.data.host.score}`
-                }
-            />)}
+            { roomStatus === 'FINISHED' && (
+                <Finished className={results.className} title={results.title} scoreX={results.scoreX} scoreY={results.scoreY} />
+            ) }
         </div>
     );
 }
