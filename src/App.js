@@ -108,10 +108,10 @@ function App() {
         const opponent = isHost ? game.data.opponent : game.data.host;
 
         return {
-            className: player.isWinner ? css.winner : css.loser,
-            title: player.isWinner ? 'Вы победили!' : 'Вы проиграли!',
-            scoreX: player.score,
-            scoreY: opponent.score,
+            className: player?.isWinner ? css.winner : css.loser,
+            title: player?.isWinner ? 'Вы победили!' : 'Вы проиграли!',
+            scoreX: player?.score,
+            scoreY: opponent?.score,
         };
     }, [game.data, userId])
 
