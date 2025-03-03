@@ -38,6 +38,10 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
             newDots = score;
         }
 
+        if (newDots === null) {
+            return
+        }
+
         const timeout = setTimeout(() => {
             setDots(newDots);
             setRolling(false);
