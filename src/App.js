@@ -45,7 +45,8 @@ function App() {
 
             return await response.json()
         },
-        refetchInterval: 10_000,
+        // Если игра закончилась, то больше не запрашиваем данные
+        refetchInterval: roomStatus === 'FINISHED' ? undefined : 5_000,
     })
 
     const joinGameMutation = useMutation({
