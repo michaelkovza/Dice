@@ -118,6 +118,8 @@ function App() {
         };
     }, [roomStatus])
 
+    console.log(results);
+
     return (
         <div style={{ backgroundColor: 'tomato' }} className="App">
             {/* <p>RoomId: {roomId}</p>
