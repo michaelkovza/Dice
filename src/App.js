@@ -112,8 +112,8 @@ function App() {
         return {
             className: player.isWinner ? css.winner : css.loser,
             title: player.isWinner ? 'Вы победили!' : 'Вы проиграли!',
-            scoreX: player.score,
-            scoreY: opponent.score,
+            scoreX: player?.score,
+            scoreY: opponent?.score,
         };
     }, [game.data, userId])
 
