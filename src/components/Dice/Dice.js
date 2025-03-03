@@ -39,6 +39,8 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
 
     return (
         <div className={css.root}>
+            {isReSpin && <p>Ничья, бросьте еще раз!</p>}
+
             <div className={css.diceContainer}>
                 <motion.div
                     className={css.dice}
