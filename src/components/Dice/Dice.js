@@ -6,7 +6,7 @@ import css from './index.module.css';
 
 
 
-export const Dice = ({ onSpin, score, isReSpin }) => {
+export const Dice = ({ onSpin, score, isReSpin, isSpining }) => {
     const [rolling, setRolling] = useState(false);
     const [dots, setDots] = useState(generateRandomDots());
 
@@ -23,19 +23,28 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
 
         setRolling(true)
         setDots(null)
+
     }, [onSpin])
 
     useEffect(() => {
-        if (!score) {
-            return
+        let newDots = null;
+
+        if (isReSpin) {
+            // players.score === null, we should pick up random dots
+            newDots = generateRandomDots();
         }
 
-        setTimeout(() => {
-            setDots(score)
-            setRolling(false)
-        }, 500)
+        if (!isReSpin && score && score !== 0) {
+            newDots = score;
+        }
 
-    }, [score])
+        const timeout = setTimeout(() => {
+            setDots(newDots);
+            setRolling(false);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [isReSpin, score]);
 
     return (
         <div className={css.root}>

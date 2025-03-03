@@ -75,11 +75,12 @@ function App() {
                 setScore(data.host.score);
             }
 
-            console.log(data)
+            setRoomStatus(data.status)
         },
     })
 
     const handleSpinDice = useCallback(() => {
+        setRoomStatus('IN_PROGRESS')
         spinRollMutation.mutate({ gameId: roomId, playerId: userId })
     }, [roomId, userId, spinRollMutation])
 
@@ -129,7 +130,7 @@ function App() {
 
             {roomStatus === 'WAITING' && (<Waiting opponentName={opponent.name} />)}
 
-            {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} />}
+            {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} isSpining={spinRollMutation.isPending} />}
 
             { roomStatus === 'FINISHED' && (
                 <Finished className={results.className} title={results.title} scoreX={results.scoreX} scoreY={results.scoreY} />
