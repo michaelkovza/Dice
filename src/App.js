@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { Waiting } from './components/Waiting/Waiting'
 import { Dice } from './components/Dice/Dice'
+import { Welcome } from './components/Welcome/Welcome'
 import { Finished } from './components/Finished/Finished'
 
 import { getRoomId } from "./lib/getRoomId";
@@ -16,7 +17,7 @@ import css from '../src/components/Finished/Finished.module.css';
 import { spinDice } from "./api/spinDice";
 
 function App() {
-    const [roomStatus, setRoomStatus] = useState('WAITING')
+    const [roomStatus, setRoomStatus] = useState('WELCOME')
     const [score, setScore] = useState(0)
 
     // undefined - не определен победелить
@@ -121,6 +122,8 @@ function App() {
            <p>Guest: {opponent}</p>
 
            <p>Status: {roomStatus}</p> */}
+
+            {roomStatus === 'WELCOME' && <Welcome />}
 
             {roomStatus === 'WAITING' && (<Waiting opponentName={opponent.name} />)}
 
