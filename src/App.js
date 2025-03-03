@@ -100,9 +100,8 @@ function App() {
         }
     }, [game.data, game.isLoading, opponent, roomId, userId]);
 
-    // TODO only then game status === FINISHED
     const results = useMemo(() => {
-        if (!game.data) {
+        if (roomStatus !== "FINISHED") {
             return
         }
 
@@ -117,7 +116,7 @@ function App() {
             scoreX: player?.score,
             scoreY: opponent?.score,
         };
-    }, [game.data, userId])
+    }, [roomStatus])
 
     return (
         <div style={{ backgroundColor: 'tomato' }} className="App">
