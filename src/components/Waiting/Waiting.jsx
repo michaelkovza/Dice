@@ -9,6 +9,7 @@ export const Waiting = ({ opponentName = 'opponentName' }) => {
             <h1 className={css.title}>We are waiting for @{opponentName} to roll the dice</h1>
 
             <BottomButton
+                style={{ background: "none", color: "black" }}
                 onClick={
                     // TODO сделать клик по кнопке, который ведет на главную
                     () => null
