@@ -99,6 +99,7 @@ function App() {
         }
     }, [game.data, game.isLoading, opponent, roomId, userId]);
 
+    // TODO only then game status === FINISHED
     const results = useMemo(() => {
         if (!game.data) {
             return
