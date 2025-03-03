@@ -6,7 +6,7 @@ import css from './index.module.css';
 
 
 
-export const Dice = ({ onSpin, score, isReSpin, isSpining }) => {
+export const Dice = ({ onSpin, score, isReSpin }) => {
     const [rolling, setRolling] = useState(false);
     const [dots, setDots] = useState(generateRandomDots());
 

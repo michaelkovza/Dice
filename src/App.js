@@ -130,7 +130,7 @@ function App() {
 
             {roomStatus === 'WAITING' && (<Waiting opponentName={opponent.name} />)}
 
-            {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} isSpining={spinRollMutation.isPending} />}
+            {['IN_PROGRESS', 'RE_SPIN'].includes(roomStatus) && <Dice isReSpin={roomStatus === 'RE_SPIN'} onSpin={handleSpinDice} score={score} />}
 
             { roomStatus === 'FINISHED' && (
                 <Finished className={results.className} title={results.title} scoreX={results.scoreX} scoreY={results.scoreY} />
