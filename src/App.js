@@ -75,7 +75,9 @@ function App() {
                 setScore(data.host.score);
             }
 
-            setRoomStatus(data.status)
+            if (data.status === 'FINISHED') {
+                game.refetch()
+            }
         },
     })
 
