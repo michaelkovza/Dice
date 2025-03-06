@@ -97,7 +97,7 @@ function App() {
 
         setRoomStatus(game.data.status)
 
-        if (game.data.host.id !== userId) {
+        if (game.data.host.id !== userId && !game.data.opponent) {
             handleJoinGame()
         }
     }, [game.data, game.isLoading, opponent, roomId, userId]);
