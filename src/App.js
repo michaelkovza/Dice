@@ -81,8 +81,12 @@ function App() {
         },
     })
 
+
     const handleSpinDice = useCallback(() => {
-        setRoomStatus('IN_PROGRESS')
+        if (roomStatus === 'RE_SPIN') {
+            setRoomStatus('IN_PROGRESS')
+        }
+
         spinRollMutation.mutate({ gameId: roomId, playerId: userId })
     }, [roomId, userId, spinRollMutation])
 

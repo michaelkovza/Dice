@@ -11,7 +11,11 @@ export const Dice = ({ onSpin, score, isReSpin }) => {
     const [dots, setDots] = useState(generateRandomDots());
 
     const isButtonDisabled = useMemo(() => {
-        return (rolling || score > 0) && !isReSpin;
+        if (isReSpin) {
+            return false
+        }
+
+        return (rolling || score > 0)
     }, [rolling, score, isReSpin])
 
     function generateRandomDots() {
